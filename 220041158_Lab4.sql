@@ -1,4 +1,4 @@
---vehicule table 
+-- 1
 
 CREATE TABLE vehicle(
 vehicle_id INT PRIMARY KEY,
@@ -11,7 +11,6 @@ speed INT
 );
 
 
--- owner table 
 
 CREATE TABLE owner (
 owner_id INT PRIMARY KEY,
@@ -21,7 +20,6 @@ city VARCHAR(30)
 );
 
 
---vehicule
 
 INSERT INTO vehicle VALUES (1, 'Toyota Corolla', 'Sedan', 132, 128, 2800, 112);
 INSERT INTO vehicle VALUES (2, 'Honda Civic', 'Sedan', 158, 138, 2760, 125);
@@ -37,7 +35,6 @@ INSERT INTO vehicle VALUES (11, 'Tesla Model S', 'Electric', 762, 723, 4647, 155
 
 
 
---owner
 
 INSERT INTO owner VALUES(1, 'John', 'Smith', 'New York');
 INSERT INTO owner VALUES(2, 'Sarah', 'johnson', 'Los Angeles');
@@ -47,7 +44,6 @@ INSERT INTO owner VALUES(5, 'David', 'Jones', 'Houston');
 
 
 
--- onwner_vehicle
 CREATE TABLE owner_vehicle (
 ownner_id INT,
 vehicle_id INT
@@ -69,42 +65,68 @@ INSERT INTO owner_vehicle  VALUES (8,5);
 
 
 
--- 1
 
 --2
-SELECT AVG(horsepower)
-FROM vehicle ;
+SELECT AVG(horsepower) FROM vehicle ;
+
 
 --3
 
-SELECT type, AVG(horsepower) AS avg
-FROM vehicle 
-GROUP BY type 
-ORDER BY avg DESC
-WHERE ROW= 1;
-
-
+SELECT type, AVG(horsepower) AS avg FROM vehicle GROUP BY type ORDER BY avg DESC WHERE ROW= 1;
 
 
 --4
 
-SELECT type , COUNT(*) AS number_vehicle  
-FROM vehicle
-GROUP BY type  
-ORDER BY number_vehicle  DESC;
+SELECT type , COUNT(*) AS number_vehicle FROM vehicle GROUP BY type ORDER BY number_vehicle  DESC WHERE ROW = 1;
 
 --5
 
-SELECT model 
-FROM vehicle 
-WHERE weight > (SELECT AVG(weight) FROM vehicle);
+SELECT model FROM vehicle WHERE weight > (SELECT AVG(weight) FROM vehicle);
 
 --6
-SELECT 
+
+SELECT DISTINCT o.first_name FROM owner o JOIN owner_vehicle ov ON o.owner_id = ov.owner_id JOIN vehicle v ON ov.vehicle_id = v.vehicle WHERE v.model LIKE  'Tesla%';
+
+--7
+
+SELECT O.first_name || ' ' || O.last_name || 'owns' || , V.model AS ownership_Info FROM owner O JOIN owner_vehicle OV ON OV.owner_id = O.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id;
 
 
+--8
+
+SELECT AVG(torque) AS avgtorque FROM vehicle GROUP BY type HAVING AVG(torque) > 250;
 
 
+--9 
+
+SELECT O.city FROM owner O JOIN owner_vehicle OV ON OV.owner_id = O.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id WHERE V.type IN ('Sedan ,Sports Car') GROUP BY O.city HAVING COUNT(V.vehicle_id) > 1;
+
+
+--10
+
+SELECT model , speed FROM vehicle WHERE model LIKE 'Ford%' ORDER BY speed DESC;
+
+--11
+
+SELECT O.first_name || ' ' || O.last_name AS Name FROM owner O JOIN owner_vehicle OV ON O.owner_id = OV.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id WHERE V.speed = (SELECT MIN(speed) FROM vehicle);
+
+--12
+
+SELECT * FROM vehicle WHERE type = 'SUV' AND speed > ALL (SELECT speed FROM vehicle WHERE type = 'Sedan');
+
+--13 
+
+SELECT DISTINCT O.owner_id FROM owner O JOIN owner_vehicle OV ON O.owner_id = OV.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id WHERE V.type = 'Electric' ;
+
+
+--14 
+
+SELECT V.model, O.first_name || ' ' || O.last_name AS owners FROM owner O JOIN owner_vehicle OV ON O.owner_id = OV.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id GROUP BY V.model HAVING COUNT(O.owner_id) > 1;
+
+
+--15 
+
+SELECT V.model, O.first_name || ' ' || O.last_name AS owners FROM owner O JOIN owner_vehicle OV ON O.owner_id = OV.owner_id JOIN vehicle V ON V.vehicle_id = OV.vehicle_id WHERE V.speed = (SELECT MIN(speed) FROM vehicle WHERE type ='Sports');
 
 
 
